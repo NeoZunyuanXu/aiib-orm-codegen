@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" 
+	xmlns="http://www.aiib.org/schema/aiib-orm-codegen" 
+	targetNamespace="http://www.aiib.org/schema/aiib-orm-codegen">
+	
+	<xs:element name="config" type="Config">
+		<xs:annotation>		
+			<xs:documentation source="version">1.0.0</xs:documentation>
+			<xs:documentation source="description"> The <code>&lt;config&gt;</code> element is the root of the configuration.</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	
+	<xs:complexType name="Config">
+		<xs:all>			
+			<xs:element name="classpathEntry" type="xs:string" maxOccurs="1" minOccurs="1" nillable="false"/>
+			<xs:element name="jdbcConnection" maxOccurs="1" minOccurs="1">
+				<xs:complexType>
+					<xs:attribute name="driverClass" type="xs:string" use="required"/>
+					<xs:attribute name="connectionURL" type="xs:string" use="required"/>
+					<xs:attribute name="userId" type="xs:string"/>
+					<xs:attribute name="password" type="xs:string"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="templates" type="Templates" maxOccurs="1" minOccurs="0"/>			
+		</xs:all>				
+	</xs:complexType>
+	<xs:complexType name="Templates">
+		<xs:all>
+			<xs:element name="templateRootPath" type="xs:string" maxOccurs="1" minOccurs="1" nillable="false"/>	
+			<xs:element name="codegenRootPath" type="xs:string" maxOccurs="1" minOccurs="1" nillable="false"/>	
+			<xs:element name="template" type="Template" minOccurs="0"/>
+		</xs:all>
+	</xs:complexType>	
+	<xs:complexType name="Template">
+		<xs:attribute name="file" type="xs:string" use="required"/>
+		<xs:attribute name="codegenPath" type="xs:string" use="required"/>
+		<xs:attribute name="codegenFile" type="xs:string" use="required"/>
+	</xs:complexType>
+</xs:schema>
