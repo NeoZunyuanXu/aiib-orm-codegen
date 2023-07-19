@@ -2,7 +2,7 @@
 <generatorConfiguration xmlns="http://www.aiib.org/schema/aiib-orm-codegen"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation=
-		"http://www.aiib.org/schema/aiib-orm-codegen aiib-orm-codegen-1.0.0.xsd">	
+		"http://www.aiib.org/schema/aiib-orm-codegen schema/aiib-orm-codegen-1.0.0.xsd">	
 
 	<classpathEntry></classpathEntry>
 	<jdbcConnection driverClass="" connectionURL=""/>
