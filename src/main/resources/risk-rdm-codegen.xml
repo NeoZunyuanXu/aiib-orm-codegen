@@ -1,10 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<generatorConfiguration xmlns="http://www.aiib.org/schema/aiib-orm-codegen"
+<generatorConfiguration
+	xmlns="http://www.aiib.org/schema/aiib-orm-codegen"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation=
-		"http://www.aiib.org/schema/aiib-orm-codegen schema/aiib-orm-codegen-1.0.0.xsd">	
+	xsi:schemaLocation="http://www.aiib.org/schema/aiib-orm-codegen schema/aiib-orm-codegen-1.0.0.xsd">
 
-	<classpathEntry></classpathEntry>
-	<jdbcConnection driverClass="" connectionURL=""/>
-	
+	<dbType>sqlserver</dbType>
+	<jdbcConnection
+		connectionURL="jdbc:sqlserver://RMP-T-EC2-SQL02.aiibank.org:1433;databaseName=rmp;encrypt=true;trustServerCertificate=true;"
+		userId="dbta_rmp_dev" password="M6VirGUHf6GGLjS69efT" />
+	<templates templateRootPath="a" codegenRootPath="b">
+		<template file="11" codegenPath="12" codegenFile="13" />
+		<template file="21" codegenPath="22" codegenFile="23" />
+	</templates>
+	<tables>
+		<table schema="" tableName="%" />
+	</tables>
 </generatorConfiguration>

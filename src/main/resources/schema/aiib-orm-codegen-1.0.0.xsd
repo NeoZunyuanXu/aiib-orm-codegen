@@ -14,28 +14,44 @@
 	
 	<xs:complexType name="GeneratorConfiguration">
 		<xs:sequence>			
-			<xs:element name="classpathEntry" type="xs:string" maxOccurs="1" minOccurs="1"/>
+			<xs:element name="dbType" maxOccurs="1" minOccurs="1">
+				<xs:simpleType>
+					<xs:restriction base="xs:string">
+						<xs:enumeration value="sqlserver"/>
+						<xs:enumeration value="mysql"/>
+					</xs:restriction>				
+				</xs:simpleType>
+			</xs:element>
 			<xs:element name="jdbcConnection" maxOccurs="1" minOccurs="1">
 				<xs:complexType>
-					<xs:attribute name="driverClass" type="xs:string" use="required"/>
 					<xs:attribute name="connectionURL" type="xs:string" use="required"/>
 					<xs:attribute name="userId" type="xs:string"/>
 					<xs:attribute name="password" type="xs:string"/>
 				</xs:complexType>
 			</xs:element>
-			<xs:element name="templates" type="Templates" maxOccurs="1" minOccurs="0"/>			
+			<xs:element name="templates" type="Templates" maxOccurs="1" minOccurs="0"/>		
+			<xs:element name="tables" type="Tables" maxOccurs="1" minOccurs="0"/>	
 		</xs:sequence>				
 	</xs:complexType>
 	<xs:complexType name="Templates">
-		<xs:all>
-			<xs:element name="templateRootPath" type="xs:string" maxOccurs="1" minOccurs="1" nillable="false"/>	
-			<xs:element name="codegenRootPath" type="xs:string" maxOccurs="1" minOccurs="1" nillable="false"/>	
-			<xs:element name="template" type="Template" minOccurs="0"/>
-		</xs:all>
+		<xs:sequence>
+			<xs:element name="template" type="Template" minOccurs="0" maxOccurs="unbounded"/>	
+		</xs:sequence>		
+		<xs:attribute name="templateRootPath" type="xs:string" use="required"/>	
+		<xs:attribute name="codegenRootPath" type="xs:string"/>			
 	</xs:complexType>	
 	<xs:complexType name="Template">
 		<xs:attribute name="file" type="xs:string" use="required"/>
 		<xs:attribute name="codegenPath" type="xs:string" use="required"/>
 		<xs:attribute name="codegenFile" type="xs:string" use="required"/>
+	</xs:complexType>
+	<xs:complexType name="Tables">
+		<xs:sequence>
+			<xs:element name="table" type="Table" minOccurs="0" maxOccurs="unbounded"/>	
+		</xs:sequence>	
+	</xs:complexType>
+	<xs:complexType name="Table">
+		<xs:attribute name="schema" type="xs:string" />
+		<xs:attribute name="tableName" type="xs:string" use="required" />
 	</xs:complexType>
 </xs:schema>
