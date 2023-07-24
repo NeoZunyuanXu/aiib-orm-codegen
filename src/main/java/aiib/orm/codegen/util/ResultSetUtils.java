@@ -22,4 +22,24 @@ public final class ResultSetUtils {
 			return null;			
 		}		
 	}
+	
+	public static Integer getInteger(ResultSet rs, String columnName) {
+		try {		
+			return rs.getInt(columnName);
+			
+		} catch (SQLException e) {	
+			
+			return null;			
+		}		
+	}
+	
+	public static Short getShort(ResultSet rs, String columnName) {
+		try {		
+			return rs.getShort(columnName);
+			
+		} catch (SQLException e) {	
+			
+			return null;			
+		}		
+	}
 }

@@ -25,11 +25,9 @@ public final class CodeGenerator {
 
 		try (var dbClient = new DbClient(config.getDbType(), config.getJdbcConnection())) {
 			for (var table : config.getTables()) {
-				var tableMetas = dbClient.getTableMetas(table.getSchema(), table.getTableName());
-				
-				for (var tableMeta : tableMetas) {
-					System.out.println(tableMeta.toString());
-				}
+				var tableMetas = dbClient.getTableMetas(table.getCatalog(), table.getSchema(), table.getTableName());
+	
+				System.out.println(tableMetas.toString());
 			}
 			
 			

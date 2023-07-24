@@ -6,13 +6,13 @@
 
 	<dbType>sqlserver</dbType>
 	<jdbcConnection
-		connectionURL="jdbc:sqlserver://RMP-T-EC2-SQL02.aiibank.org:1433;databaseName=rmp;encrypt=true;trustServerCertificate=true;"
+		connectionURL="jdbc:sqlserver://RMP-T-EC2-RDMDB.aiibank.org:1433;databaseName=rmp;encrypt=true;trustServerCertificate=true;"
 		userId="dbta_rmp_dev" password="M6VirGUHf6GGLjS69efT" />
 	<templates templateRootPath="a" codegenRootPath="b">
 		<template file="11" codegenPath="12" codegenFile="13" />
 		<template file="21" codegenPath="22" codegenFile="23" />
 	</templates>
 	<tables>
-		<table schema="" tableName="%" />
+		<table catalog="" schema="" tableName="%" />
 	</tables>
 </generatorConfiguration>

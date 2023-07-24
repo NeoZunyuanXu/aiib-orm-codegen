@@ -51,6 +51,7 @@
 		</xs:sequence>	
 	</xs:complexType>
 	<xs:complexType name="Table">
+		<xs:attribute name="catalog" type="xs:string" />
 		<xs:attribute name="schema" type="xs:string" />
 		<xs:attribute name="tableName" type="xs:string" use="required" />
 	</xs:complexType>

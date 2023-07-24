@@ -50,6 +50,7 @@ public final class GeneratorConfiguration {
 	
 	@Data
 	public static class Table {
+		private String catalog;
 		
 		private String schema;
 		
