@@ -6,6 +6,8 @@ package aiib.orm.codegen.config;
 import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonValue;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
+import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 
 import lombok.Data;
 import lombok.Getter;
@@ -24,7 +26,7 @@ public final class GeneratorConfiguration {
 	
 	private JdbcConnection jdbcConnection;
 	
-	private List<Template> templates;	
+	private Templates templates;	
 
 	private List<Table> tables;
 	
@@ -39,13 +41,32 @@ public final class GeneratorConfiguration {
 	}
 	
 	@Data
+	public static class Templates {
+		@JacksonXmlProperty(isAttribute = true)
+		private String templateRootPath;
+		
+		@JacksonXmlProperty(isAttribute = true)
+		private String targetRootPath;
+		
+		@JacksonXmlProperty(isAttribute = false, localName = "template")
+		@JacksonXmlElementWrapper(useWrapping = false)
+		private List<Template> templates;
+	}
+	
+	@Data
 	public static class Template {
 		
 		private String file;
 		
-		private String codegenPath;
+		private String targetProject;
 		
-		private String codegenFile;
+		private String targetPackage;
+		
+		private String targetFilePrefix;
+		
+		private String targetFileSuffix;
+		
+		private String targetFileExt;
 	}
 	
 	@Data

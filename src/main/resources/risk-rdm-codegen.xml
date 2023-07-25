@@ -8,11 +8,20 @@
 	<jdbcConnection
 		connectionURL="jdbc:sqlserver://RMP-T-EC2-RDMDB.aiibank.org:1433;databaseName=rmp;encrypt=true;trustServerCertificate=true;"
 		userId="dbta_rmp_dev" password="M6VirGUHf6GGLjS69efT" />
-	<templates templateRootPath="a" codegenRootPath="b">
-		<template file="11" codegenPath="12" codegenFile="13" />
-		<template file="21" codegenPath="22" codegenFile="23" />
+	<templates
+		templateRootPath="C:\Users\zunyuan.xu\source\eclipse\orm.codegen\src\main\resources\template"
+		targetRootPath="C:\Temp">
+
+		<template file="jpaEntity.vm"
+			targetProject="testproject\src\main\java"
+			targetPackage="aiib.test.entity" targetFileSuffix=""
+			targetFileExt=".java" />
+		<template file="jpaRepository.vm"
+			targetProject="testproject\src\main\java"
+			targetPackage="aiib.test.repository" targetFileSuffix="Repository"
+			targetFileExt=".java" />
 	</templates>
 	<tables>
-		<table catalog="" schema="" tableName="%" />
+		<table catalog="" schema="" tableName="Test" />
 	</tables>
 </generatorConfiguration>

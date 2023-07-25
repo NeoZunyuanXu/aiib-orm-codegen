@@ -1,0 +1,162 @@
+package ${package};
+
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.GenericGenerator;
+
+import javax.persistence.*;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
+
+@Entity
+@Table(name = ${tableMeta.tableName})
+public class ${fileName} {
+
+    @Id
+    @GeneratedValue(generator = "uuid")
+    @GenericGenerator(name = "uuid", strategy = "org.hibernate.id.UUIDGenerator")
+    private String uid;
+    @Column(nullable = false, unique = true, length = 32)
+    private String userName;
+    @Column(nullable = true, length = 64)
+    private String password;
+    @Column(nullable = true, length = 64)
+    private String realName;
+    @Column(nullable = true, length = 128)
+    private String email;
+    @Column(nullable = true)
+    private Boolean superadmin;
+    @Column(nullable = false)
+    private Boolean enabled;
+
+    public Boolean getSuperadmin() {
+        return superadmin;
+    }
+
+    public void setSuperadmin(Boolean superadmin) {
+        this.superadmin = superadmin;
+    }
+
+    public Boolean getEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public Boolean getBuildin() {
+        return buildin;
+    }
+
+    public void setBuildin(Boolean buildin) {
+        this.buildin = buildin;
+    }
+
+    @Column(nullable = true)
+    private Boolean buildin;
+    @Column(nullable = true)
+    private Date createdate;
+    @Column(nullable = true,length=128)
+    private String deptName;
+
+    public Date getLastLoginTime() {
+        return lastLoginTime;
+    }
+
+    public void setLastLoginTime(Date lastLoginTime) {
+        this.lastLoginTime = lastLoginTime;
+    }
+
+    @Column(name = "LAST_LOGIN_TIME",nullable = true)
+    private Date lastLoginTime;
+
+    @Column(nullable = true)
+    private String status;
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+//    @OneToOne
+//    @Fetch(FetchMode.JOIN)
+//    @JoinTable(
+//            name = "rmp_middleware_userdept",
+//            joinColumns = @JoinColumn(name = "uid"),
+//            inverseJoinColumns = @JoinColumn(name = "did"))
+//    private Dept dept;
+
+    public String getUid() {
+        return uid;
+    }
+
+    public void setUid(String uid) {
+        this.uid = uid;
+    }
+
+    public String getRealName() {
+        return realName;
+    }
+
+    public void setRealName(String realName) {
+        this.realName = realName;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+
+    public Date getCreatedate() {
+        return createdate;
+    }
+
+    public void setCreatedate(Date createdate) {
+        this.createdate = createdate;
+    }
+
+	public String getDeptName() {
+		return deptName;
+	}
+
+	public void setDeptName(String deptName) {
+		this.deptName = deptName;
+	}
+
+//    public Dept getDept() {
+//        return dept;
+//    }
+//
+//    public void setDept(Dept dept) {
+//        this.dept = dept;
+//    }
+
+
+
+
+     
+}
