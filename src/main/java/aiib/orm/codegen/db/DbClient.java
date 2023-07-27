@@ -13,8 +13,8 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
-import aiib.orm.codegen.config.GeneratorConfiguration.DbType;
-import aiib.orm.codegen.config.GeneratorConfiguration.JdbcConnection;
+import aiib.orm.codegen.configuration.GeneratorConfiguration.DbType;
+import aiib.orm.codegen.configuration.GeneratorConfiguration.JdbcConnection;
 import aiib.orm.codegen.util.ResultSetUtils;
 
 /**
@@ -61,15 +61,17 @@ public class DbClient implements AutoCloseable {
 			result.add(table);
 			
 			var tableColumns = new ArrayList<>(columns.stream().filter(e -> 
-					StringUtils.equals(table.getTableCat(), e.getTableCat()) &&
-					StringUtils.equals(table.getTableSchem(), e.getTableSchem()) &&
-					StringUtils.equals(table.getTableName(), e.getTableName())).toList());
+					StringUtils.equals(table.getCatalog(), e.getTableCatalog()) &&
+					StringUtils.equals(table.getSchema(), e.getTableSchema()) &&
+					StringUtils.equals(table.getName(), e.getTableName())).toList());
+			
+			tableColumns.sort((a, b) -> a.getOrdinalPosition().compareTo(b.getOrdinalPosition()));			
 
-			var primaryKeys = getPrimaryKeyMetas(table.getTableCat(), table.getTableSchem(), table.getTableName());
+			var primaryKeys = getPrimaryKeyMetas(table.getCatalog(), table.getSchema(), table.getName());
 			
 			for (var primaryKey : primaryKeys) {
 				var primaryKeyColumn = tableColumns.stream()
-						.filter(e -> e.getColumnName().equals(primaryKey.getColumnName()))	
+						.filter(e -> e.getName().equals(primaryKey.getColumnName()))	
 						.findFirst();
 				
 				if (primaryKeyColumn.isPresent()) {
@@ -102,7 +104,7 @@ public class DbClient implements AutoCloseable {
 	
 	protected List<PrimaryKeyMeta> getPrimaryKeyMetas(String catalog, String schema, String tableName) throws SQLException {
 		var result = new ArrayList<PrimaryKeyMeta>(16);
-		
+
 		var rsPrimaryKey = meta.getPrimaryKeys(catalog, schema, tableName);
 		
 		while (rsPrimaryKey.next()) {
@@ -117,16 +119,11 @@ public class DbClient implements AutoCloseable {
 	protected TableMeta convertTableMeta(ResultSet rs) throws SQLException {
 		var result = new TableMeta();
 		
-		result.setTableName(ResultSetUtils.getString(rs, "TABLE_NAME"));
-		result.setTableCat(ResultSetUtils.getString(rs, "TABLE_CAT"));
-		result.setTableSchem(ResultSetUtils.getString(rs, "TABLE_SCHEM"));
-		result.setTableType(ResultSetUtils.getString(rs, "TABLE_TYPE"));
-		result.setTypeName(ResultSetUtils.getString(rs, "TYPE_NAME"));
-		result.setTypeCat(ResultSetUtils.getString(rs, "TYPE_CAT"));
-		result.setTypeSchem(ResultSetUtils.getString(rs, "TYPE_SCHEM"));
+		result.setName(ResultSetUtils.getString(rs, "TABLE_NAME"));
+		result.setCatalog(ResultSetUtils.getString(rs, "TABLE_CAT"));
+		result.setSchema(ResultSetUtils.getString(rs, "TABLE_SCHEM"));
+		result.setType(ResultSetUtils.getString(rs, "TABLE_TYPE"));
 		result.setRemarks(ResultSetUtils.getString(rs, "REMARKS"));
-		result.setSelfReferencingColName(ResultSetUtils.getString(rs, "SELF_REFERENCING_COL_NAME"));
-		result.setRefGeneration(ResultSetUtils.getString(rs, "REF_GENERATION"));
 				
 		return result;
 	}
@@ -134,27 +131,20 @@ public class DbClient implements AutoCloseable {
 	protected ColumnMeta convertColumnMeta(ResultSet rs) throws SQLException {
 		var result = new ColumnMeta();
 		
-		result.setTableCat(ResultSetUtils.getString(rs, "TABLE_CAT"));
-		result.setTableSchem(ResultSetUtils.getString(rs, "TABLE_SCHEM"));
+		result.setTableCatalog(ResultSetUtils.getString(rs, "TABLE_CAT"));
+		result.setTableSchema(ResultSetUtils.getString(rs, "TABLE_SCHEM"));
 		result.setTableName(ResultSetUtils.getString(rs, "TABLE_NAME"));
-		result.setColumnName(ResultSetUtils.getString(rs, "COLUMN_NAME"));
-		result.setDataType(ResultSetUtils.getInteger(rs, "DATA_TYPE"));
+		result.setName(ResultSetUtils.getString(rs, "COLUMN_NAME"));
+		result.setJdbcType(ResultSetUtils.getInteger(rs, "DATA_TYPE"));
 		result.setTypeName(ResultSetUtils.getString(rs, "TYPE_NAME"));
-		result.setColumnSize(ResultSetUtils.getInteger(rs, "COLUMN_SIZE"));
-		result.setDecimalDigits(ResultSetUtils.getInteger(rs, "DECIMAL_DIGITS"));
-		result.setNumPrecRadix(ResultSetUtils.getInteger(rs, "NUM_PREC_RADIX"));
-		result.setNullable(ResultSetUtils.getInteger(rs, "NULLABLE"));
+		result.setLength(ResultSetUtils.getInteger(rs, "COLUMN_SIZE"));
+		result.setScale(ResultSetUtils.getInteger(rs, "DECIMAL_DIGITS"));		
+		result.setNullable(ResultSetUtils.getInteger(rs, "NULLABLE") == DatabaseMetaData.columnNullable);
 		result.setRemarks(ResultSetUtils.getString(rs, "REMARKS"));
-		result.setColumnDef(ResultSetUtils.getString(rs, "COLUMN_DEF"));
-		result.setCharOctetLength(ResultSetUtils.getInteger(rs, "CHAR_OCTET_LENGTH"));
+		result.setDefaultValue(ResultSetUtils.getString(rs, "COLUMN_DEF"));
 		result.setOrdinalPosition(ResultSetUtils.getInteger(rs, "ORDINAL_POSITION"));
-		result.setIsNullable(ResultSetUtils.getString(rs, "IS_NULLABLE"));
-		result.setScopeCatalog(ResultSetUtils.getString(rs, "SCOPE_CATALOG"));
-		result.setScopeSchema(ResultSetUtils.getString(rs, "SCOPE_SCHEMA"));
-		result.setScopeTable(ResultSetUtils.getString(rs, "SCOPE_TABLE"));
-		result.setSourceDataType(ResultSetUtils.getShort(rs, "SOURCE_DATA_TYPE"));
-		result.setIsAutoIncrement(ResultSetUtils.getString(rs, "IS_AUTOINCREMENT"));
-		result.setIsGeneratedColumn(ResultSetUtils.getString(rs, "IS_GENERATEDCOLUMN"));
+		result.setAutoIncrement("YES".equals(ResultSetUtils.getString(rs, "IS_AUTOINCREMENT")));
+		result.setGeneratedColumn("YES".equals(ResultSetUtils.getString(rs, "IS_GENERATEDCOLUMN")));
 		
 		return result;		
 	}
@@ -162,9 +152,6 @@ public class DbClient implements AutoCloseable {
 	protected PrimaryKeyMeta convertPrimaryKeyMeta(ResultSet rs) throws SQLException {
 		var result = new PrimaryKeyMeta();
 		
-		result.setTableCat(ResultSetUtils.getString(rs, "TABLE_CAT"));
-		result.setTableSchem(ResultSetUtils.getString(rs, "TABLE_SCHEM"));
-		result.setTableName(ResultSetUtils.getString(rs, "TABLE_NAME"));
 		result.setColumnName(ResultSetUtils.getString(rs, "COLUMN_NAME"));
 		result.setKeySeq(ResultSetUtils.getShort(rs, "KEY_SEQ"));
 		result.setPkName(ResultSetUtils.getString(rs, "PK_NAME"));

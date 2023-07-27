@@ -15,15 +15,14 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.CaseUtils;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.runtime.RuntimeConstants;
+import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
 import org.apache.velocity.tools.ToolContext;
 import org.apache.velocity.tools.ToolManager;
 
-import aiib.orm.codegen.config.GeneratorConfiguration;
-import aiib.orm.codegen.config.GeneratorConfiguration.Template;
-import aiib.orm.codegen.config.GeneratorConfigurationParser;
-import aiib.orm.codegen.db.DbClient;
+import aiib.orm.codegen.configuration.GeneratorConfiguration.Template;
 import aiib.orm.codegen.db.TableMeta;
-import aiib.orm.codegen.util.CollectionUtils;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * @ClassName: CodeGenerator
@@ -31,86 +30,90 @@ import aiib.orm.codegen.util.CollectionUtils;
  * @Author: zunyuan.xu
  * @Date: Jul 20, 2023 5:19:51 PM
  */
+@Slf4j
 public final class CodeGenerator {
-	private GeneratorConfiguration config;	
-	private VelocityEngine engine;
-	private ToolContext baseContext;
+	private final Context context;	
+	private final VelocityEngine engine;
+	private final ToolContext toolContext;
 	
-	public CodeGenerator(String configFilePath) throws Exception {
-		config = GeneratorConfigurationParser.parse(configFilePath);
+	private final String CLASSPATH_PREFIX = "classpath:";
+	private String templatePath = "";
+	
+	public CodeGenerator(String configurationFilePath) throws Exception {
+		context = new Context(configurationFilePath);
 		engine = new VelocityEngine();
 		
 		var initProperties = new Properties();
+		var path = context.getConfiguration().getTemplates().getPath().trim();	
+				
+		if (path.startsWith(CLASSPATH_PREFIX)) {
+			initProperties.put(RuntimeConstants.RESOURCE_LOADERS, "class");
+			initProperties.put("resource.loader.class.class", ClasspathResourceLoader.class.getName());
+			
+			templatePath = path.substring(CLASSPATH_PREFIX.length()).trim();
+			if (!templatePath.endsWith("/")) templatePath = templatePath + "/";
+			
+		} else {
+			initProperties.put(RuntimeConstants.RESOURCE_LOADERS, "file");
+			initProperties.put(RuntimeConstants.FILE_RESOURCE_LOADER_PATH, context.getConfiguration().getTemplates().getPath());
+			initProperties.put(RuntimeConstants.FILE_RESOURCE_LOADER_CACHE, true);
+		}		
 		
-		initProperties.put("file.resource.loader.path", config.getTemplates().getTemplateRootPath());
-		initProperties.put("file.resource.loader.cache", true);
+		initProperties.put(RuntimeConstants.SPACE_GOBBLING, "structured");
 		
 		engine.init(initProperties);
 		
-		Map<String, Object> map = Map.of("engine", engine, "config", config);		
+		Map<String, Object> map = Map.of("engine", engine, "context", context);		
 		var manage = new ToolManager(true, true);
 		
-		baseContext = manage.createContext(map);		
+		toolContext = manage.createContext(map);		
 	}
 	
-	public void execute() throws Exception {				
-		if (CollectionUtils.isEmpty(config.getTemplates().getTemplates()) 
-				|| CollectionUtils.isEmpty(config.getTables())) {
-			return;
+	public void execute() throws Exception {
+		for (var tableMeta : context.getTableMetas()) {
+			log.info("table : {} is under generating...", tableMeta.getName());
+			
+			for (var template : context.getConfiguration().getTemplates().getTemplates()) {
+				execute(tableMeta, template);
+			}			
 		}
 		
-		try (var dbClient = new DbClient(config.getDbType(), config.getJdbcConnection())) {
-			for (var table : config.getTables()) {
-				var tableMetas = dbClient.getTableMetas(table.getCatalog(), table.getSchema(), table.getTableName());
-				
-				for (var tableMeta : tableMetas) {
-					for (var template : config.getTemplates().getTemplates()) {
-						executeOne(tableMeta, template);
-					}					
-				}
-			}			
-			
-		} catch (Exception e) {
-			throw e;
-		}
+		log.info("code generate finished. total {} table is done.", context.getTableMetas().size());
 	}	
 	
-	private void executeOne(TableMeta tableMeta, Template template) throws IOException {
-		var context = new VelocityContext(baseContext);
-		var tableName = CaseUtils.toCamelCase(tableMeta.getTableName(), true, '_', '-');		
-		var filePath = Paths.get(
-				config.getTemplates().getTargetRootPath(), 
+	private void execute(TableMeta tableMeta, Template template) throws IOException {
+		var velocityContext = new VelocityContext(toolContext);		
+
+		var path = Paths.get(
+				context.getConfiguration().getTemplates().getTargetRootPath(), 
 				template.getTargetProject(),
-				RegExUtils.replaceAll(template.getTargetPackage(), "\\.", "/")).toAbsolutePath();		
+				RegExUtils.replaceAll(template.getTargetPackage(), "\\.", "/"))
+				.toAbsolutePath().toString();		
 		
+		var pathFile = new File(path);
+		if (!pathFile.exists()) pathFile.mkdirs();
+	
 		var fileName = StringUtils.join(template.getTargetFilePrefix(), 
-				tableName, template.getTargetFileSuffix()); 
+				tableMeta.getNaming(), template.getTargetFileSuffix()); 
 		
 		var fileFullName = StringUtils.join(fileName, template.getTargetFileExt());
 				
-		context.put("tableMeta", tableMeta);
-		context.put("template", template);
-		context.put("tableName", tableName);
-		context.put("fileName", fileName);
+		velocityContext.put("table", tableMeta);
+		velocityContext.put("fileName", fileName);
+		velocityContext.put("package", template.getTargetPackage() == null ? "" : template.getTargetPackage());
+		velocityContext.put("CaseUtils", CaseUtils.class);
+		velocityContext.put("StringUtils", StringUtils.class);
 		
-		if (StringUtils.isNotEmpty(template.getTargetPackage())) {
-			context.put("package", template.getTargetPackage());
-		}
-		
-		var file = new File(filePath + "/" + fileFullName);
-		file.getParentFile().mkdirs();
+		var file = new File(path + "/" + fileFullName);
 		
 		try (var fileWriter = new FileWriter(file, false)) {
-			engine.mergeTemplate(template.getFile(), "UTF-8", context, fileWriter);
-			
-		} catch (IOException e) {
-			throw e;
-		}		
+			engine.mergeTemplate(templatePath + template.getFile(), "UTF-8", velocityContext, fileWriter);			
+		}	
 	}
 
 	public static void main(String[] args) throws Exception {
 		var generator = new CodeGenerator("C:\\Users\\zunyuan.xu\\source\\eclipse\\orm.codegen\\src\\main\\resources\\risk-rdm-codegen.xml");
-	
+			
 		generator.execute();
 	}
 

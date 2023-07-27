@@ -13,9 +13,6 @@ import lombok.Data;
  */
 @Data
 public class PrimaryKeyMeta {
-	private String tableCat;
-	private String tableSchem;
-	private String tableName;
 	private String columnName;
 	private Short keySeq;
 	private String pkName;

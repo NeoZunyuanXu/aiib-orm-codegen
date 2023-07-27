@@ -1,7 +1,7 @@
 /*
  * All rights reserved by the Asian Infrustructure Investment Bank(AIIB). 
  */
-package aiib.orm.codegen.config;
+package aiib.orm.codegen.configuration;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,22 +35,6 @@ public final class GeneratorConfigurationParser {
 		mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 	
 		return mapper.readValue(new File(configFilePathName), GeneratorConfiguration.class);
-	}
-	
-	/**
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		try {
-			var object = GeneratorConfigurationParser.parse("C:\\Users\\zunyuan.xu\\source\\eclipse\\orm.codegen\\src\\main\\resources\\risk-rdm-codegen.xml");
-			
-			System.out.println(object.toString());
-			System.out.println(object.getJdbcConnection().getUserId() == null);
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
 	}
 
 }

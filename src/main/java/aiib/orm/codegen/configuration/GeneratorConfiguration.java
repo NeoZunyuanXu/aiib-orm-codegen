@@ -1,10 +1,11 @@
 /*
  * All rights reserved by the Asian Infrustructure Investment Bank(AIIB). 
  */
-package aiib.orm.codegen.config;
+package aiib.orm.codegen.configuration;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonMerge;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
@@ -26,9 +27,11 @@ public final class GeneratorConfiguration {
 	
 	private JdbcConnection jdbcConnection;
 	
+	private String javaTypeResolver;
+	
 	private Templates templates;	
 
-	private List<Table> tables;
+	private Tables tables;
 	
 	@Data
 	public static class JdbcConnection {
@@ -43,7 +46,7 @@ public final class GeneratorConfiguration {
 	@Data
 	public static class Templates {
 		@JacksonXmlProperty(isAttribute = true)
-		private String templateRootPath;
+		private String path;
 		
 		@JacksonXmlProperty(isAttribute = true)
 		private String targetRootPath;
@@ -70,12 +73,36 @@ public final class GeneratorConfiguration {
 	}
 	
 	@Data
+	public static class Tables {
+		@JacksonXmlProperty(isAttribute = true)
+		private NamingStrategy namingStrategy;
+		
+		@JacksonXmlProperty(isAttribute = false, localName = "table")
+		@JacksonXmlElementWrapper(useWrapping = false)
+		private List<Table> tables;
+	}
+	
+	@Data
 	public static class Table {
 		private String catalog;
 		
 		private String schema;
 		
 		private String tableName;
+		
+		@JacksonXmlProperty(isAttribute = false, localName = "generatedKey")
+		@JacksonXmlElementWrapper(useWrapping = false)
+		@JsonMerge
+		private List<GeneratedKey> generatedKeys;
+	}
+	
+	@Data
+	public static class GeneratedKey {
+		private String column;
+		
+		private String strategy;
+		
+		private String parameters;
 	}
 	
 	@Getter
@@ -88,6 +115,20 @@ public final class GeneratorConfiguration {
 		private String name;
 		
 		private DbType(String name) {
+			this.name = name;
+		}	
+	}
+	
+	@Getter
+	@ToString
+	public static enum NamingStrategy {
+		DEFAULT("default"),
+		CHOP_FIRST_PHASE("chopFirstPhase");
+		
+		@JsonValue
+		private String name;
+		
+		private NamingStrategy(String name) {
 			this.name = name;
 		}	
 	}

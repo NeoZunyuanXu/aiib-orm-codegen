@@ -18,7 +18,7 @@ import aiib.orm.codegen.db.ColumnMeta;
  * @Date: Jul 25, 2023 5:36:56 PM
  */
 public class JavaTypeResolverDefaultImpl implements JavaTypeResolver {
-	private final Map<Integer, FullyQualifiedJavaType> typeMap;
+	protected final Map<Integer, FullyQualifiedJavaType> typeMap;
 
 	public JavaTypeResolverDefaultImpl() {
 		typeMap = new HashMap<>();
@@ -68,7 +68,7 @@ public class JavaTypeResolverDefaultImpl implements JavaTypeResolver {
 	 */
 	@Override
 	public FullyQualifiedJavaType resolveColumnType(ColumnMeta columnMeta) {
-		var answer = typeMap.get(columnMeta.getDataType());
+		var answer = typeMap.get(columnMeta.getJdbcType());
 
 		answer = overrideDefaultType(columnMeta, answer);
 
@@ -77,14 +77,14 @@ public class JavaTypeResolverDefaultImpl implements JavaTypeResolver {
 
 	protected FullyQualifiedJavaType overrideDefaultType(ColumnMeta columnMeta, FullyQualifiedJavaType defaultType) {
 
-		return switch (columnMeta.getDataType()) {
-				case Types.BIT -> columnMeta.getColumnSize() > 1 ? new FullyQualifiedJavaType("byte[]") : defaultType;
+		return switch (columnMeta.getJdbcType()) {
+				case Types.BIT -> columnMeta.getLength() > 1 ? new FullyQualifiedJavaType("byte[]") : defaultType;
 				case Types.DATE -> new FullyQualifiedJavaType("java.time.LocalDate");
 				case Types.DECIMAL, Types.NUMERIC -> {
-					if (columnMeta.getDecimalDigits() > 0 || columnMeta.getColumnSize() > 18) {
+					if (columnMeta.getScale() > 0 || columnMeta.getLength() > 18) {
 						yield defaultType;
 					
-					} else if (columnMeta.getColumnSize() > 9) {
+					} else if (columnMeta.getLength() > 9) {
 						yield new FullyQualifiedJavaType(Long.class.getName());
 					
 					} else {

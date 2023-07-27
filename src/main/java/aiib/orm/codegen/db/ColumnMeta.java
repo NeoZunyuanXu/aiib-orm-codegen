@@ -3,7 +3,10 @@
  */
 package aiib.orm.codegen.db;
 
+import aiib.orm.codegen.type.FullyQualifiedJavaType;
+import aiib.orm.codegen.util.CaseUtils;
 import lombok.Data;
+import lombok.ToString;
 
 /**
  * @ClassName: ColumnMeta 
@@ -12,26 +15,41 @@ import lombok.Data;
  * @Date:		Jul 24; 2023 1:32:09 PM	 
  */
 @Data	
+@ToString(exclude = {"tableMeta"})
 public class ColumnMeta {
-	private String tableCat;
-	private String tableSchem;
-	private String tableName;
-	private String columnName;
-	private Integer dataType;
+	private String tableCatalog;
+	private String tableSchema;
+	private String tableName;	
+	private String name;
+	private int jdbcType;
 	private String typeName;
-	private Integer columnSize;
-	private Integer decimalDigits;
-	private Integer numPrecRadix;
-	private Integer nullable;
+	private int length;
+	private int scale;
+	private boolean nullable;
 	private String remarks;
-	private String columnDef;
-	private Integer charOctetLength;
+	private String defaultValue;
 	private Integer ordinalPosition;
-	private String isNullable;
-	private String scopeCatalog;
-	private String scopeSchema;
-	private String scopeTable;
-	private Short sourceDataType;
-	private String isAutoIncrement;
-	private String isGeneratedColumn;
+	private boolean isAutoIncrement;
+	private boolean isGeneratedColumn;
+		
+	private FullyQualifiedJavaType javaType;
+	
+	private boolean isPrimaryKey = false;
+	
+	private boolean isGeneratedKey = false;
+	
+	private String generatedKeyStrategy;
+	
+	private String generatedKeyParameters;
+
+	private TableMeta tableMeta; 		
+	
+	public String getCapitalizedCamelCaseName() {
+		return CaseUtils.toCamelCase(name, true);
+	}
+	
+	public String getUncapitalizedCamelCaseName() {
+		return CaseUtils.toCamelCase(name, false);
+	}
+
 }

@@ -29,6 +29,7 @@
 					<xs:attribute name="password" type="xs:string"/>
 				</xs:complexType>
 			</xs:element>
+			<xs:element name="javaTypeResolver" type="xs:string" maxOccurs="1" minOccurs="0"/>
 			<xs:element name="templates" type="Templates" maxOccurs="1" minOccurs="1"/>		
 			<xs:element name="tables" type="Tables" maxOccurs="1" minOccurs="1"/>	
 		</xs:sequence>				
@@ -37,7 +38,7 @@
 		<xs:sequence>
 			<xs:element name="template" type="Template" minOccurs="0" maxOccurs="unbounded"/>	
 		</xs:sequence>		
-		<xs:attribute name="templateRootPath" type="xs:string" use="required"/>	
+		<xs:attribute name="path" type="xs:string" use="required"/>	
 		<xs:attribute name="targetRootPath" type="xs:string"/>			
 	</xs:complexType>	
 	<xs:complexType name="Template">
@@ -51,11 +52,27 @@
 	<xs:complexType name="Tables">
 		<xs:sequence>
 			<xs:element name="table" type="Table" minOccurs="0" maxOccurs="unbounded"/>	
-		</xs:sequence>	
+		</xs:sequence>
+		<xs:attribute name="namingStrategy" default="default">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="default" />
+					<xs:enumeration value="chopFirstPhase" />
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>	
 	</xs:complexType>
 	<xs:complexType name="Table">
+		<xs:sequence>
+			<xs:element name="generatedKey" type="GeneratedKey" minOccurs="0" maxOccurs="unbounded" />						
+		</xs:sequence>
 		<xs:attribute name="catalog" type="xs:string" />
 		<xs:attribute name="schema" type="xs:string" />
 		<xs:attribute name="tableName" type="xs:string" use="required" />
+	</xs:complexType>
+	<xs:complexType name="GeneratedKey">
+		<xs:attribute name="column" type="xs:string" use="required" />
+		<xs:attribute name="strategy" type="xs:string" use="required" />
+		<xs:attribute name="parameters" type="xs:string" />
 	</xs:complexType>
 </xs:schema>

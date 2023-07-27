@@ -27,13 +27,21 @@ public class FullyQualifiedJavaType {
 		parse(spec);
 	}
 	
+	public boolean isDecimal() {
+		return "java.math.BigDecimal".equals(fullName);
+	}
+	
+	public boolean isString() {
+		return "java.lang.String".equals(fullName);
+	}
+	
 	private void parse(String spec) {
 		fullName = spec.trim();
 		
 		if (fullName.contains(".")) {
 			packageName = fullName.substring(0, fullName.lastIndexOf('.'));
 			shortName = fullName.substring(packageName.length() + 1);
-			explicitImported = "java.lang".equals(packageName);
+			explicitImported = !"java.lang".equals(packageName);
 			
 		} else {
 			packageName = "";
