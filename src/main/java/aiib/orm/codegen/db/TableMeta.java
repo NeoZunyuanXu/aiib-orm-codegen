@@ -106,6 +106,12 @@ public class TableMeta {
 		return null;
 	}
 	
+	public ColumnMeta getUniquePrimaryKeyColumn() {
+		if (primaryKeyColumns.size() != 1) return null;
+		
+		return primaryKeyColumns.get(0);
+	}
+	
 	@Setter(AccessLevel.NONE)
 	private Set<String> explicitImportedJavaTypes = new HashSet<>(32);
 	

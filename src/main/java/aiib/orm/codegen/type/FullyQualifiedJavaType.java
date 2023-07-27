@@ -27,6 +27,10 @@ public class FullyQualifiedJavaType {
 		parse(spec);
 	}
 	
+	public String getImportedAwareName() {
+		return explicitImported ? fullName : shortName;
+	}
+	
 	public boolean isDecimal() {
 		return "java.math.BigDecimal".equals(fullName);
 	}

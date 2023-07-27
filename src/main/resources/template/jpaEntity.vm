@@ -1,18 +1,23 @@
 #set(${className} = ${fileName})
+#if($table.primaryKeyColumns.size() > 1)
+	#set($primaryKeyClassName = $className + "Pk")
+#end
 package ${package};
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Column;
 import javax.persistence.Id;
-import javax.persistence.GeneratedValue;
-import org.hibernate.annotations.GenericGenerator;
 #foreach(${explicitImportedJavaType} in ${table.explicitImportedJavaTypes})
 	import ${explicitImportedJavaType}
 #end
 
 @Entity
 @Table(name = "${table.name}")
+@lombok.Data
+#if($table.primaryKeyColumns.size() > 1)
+@javax.persistence.IdClass(${primaryKeyClassName}.class)
+#end
 public class ${className} {	
 	#foreach(${column} in ${table.columns})
 		
@@ -21,23 +26,24 @@ public class ${className} {
 		#end
 		#if(${column.generatedKey})
 			#set(${columnGeneratedKeyName} = ${table.name.toLowerCase()} + '_' + ${column.name.toLowerCase()} + '_gen_key')
-			@GeneratedValue(generator = "${columnGeneratedKeyName}")
-			@GenericGenerator(name="${columnGeneratedKeyName}", strategy="${column.generatedKeyStrategy}"#if($StringUtils.isNotEmpty($column.generatedKeyParameters)), parameters=${column.generatedKeyParameters}#end)
+			@javax.persistence.GeneratedValue(generator = "${columnGeneratedKeyName}")
+			@org.hibernate.annotations.GenericGenerator(name="${columnGeneratedKeyName}", strategy="${column.generatedKeyStrategy}"#if($StringUtils.isNotEmpty($column.generatedKeyParameters)), parameters=${column.generatedKeyParameters}#end)
 		#end
 		@Column(name="${column.name}", nullable = ${column.nullable}#if(${column.javaType.string}), length = ${column.length}#end#if(${column.javaType.decimal}), precision = ${column.length}, scale=${column.scale}#end)
 		private ${column.javaType.shortName} ${column.uncapitalizedCamelCaseName};
 	#end
-	#foreach(${column} in ${table.columns})
-		
-		public ${column.javaType.shortName} get${column.capitalizedCamelCaseName}() {
-			return ${column.uncapitalizedCamelCaseName};
-		}
-	#end
-	#foreach(${column} in ${table.columns})
-		
-		public void set${column.capitalizedCamelCaseName}(${column.javaType.shortName} ${column.uncapitalizedCamelCaseName}) {
-			this.${column.uncapitalizedCamelCaseName} = ${column.uncapitalizedCamelCaseName};
-		}
-	#end
-     
+	
+	#if($table.primaryKeyColumns.size() > 1)
+		@lombok.Data
+		@lombok.NoArgsConstructor
+		@lombok.AllArgsConstructor
+		public static class $primaryKeyClassName implements java.io.IOException {
+			@java.io.Serial
+			private static final long serialVersionUID = 1L;			
+			#foreach($primaryKeyColumn in $table.primaryKeyColumns)
+					
+			private ${primaryKeyColumn.javaType.shortName} ${primaryKeyColumn.uncapitalizedCamelCaseName};
+			#end
+    }
+    #end 
 }

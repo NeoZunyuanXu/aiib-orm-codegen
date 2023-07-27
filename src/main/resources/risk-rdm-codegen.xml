@@ -23,7 +23,7 @@
 			targetFileExt=".java" />
 	</templates>
 	<tables namingStrategy="chopFirstPhase">
-		<table catalog="" schema="" tableName="TEST">
+		<table catalog="" schema="" tableName="TEST%">
 			<generatedKey column="ID" strategy="sequence" parameters="{&quot;seq_test&quot;}"/>
 		</table>
 	</tables>
