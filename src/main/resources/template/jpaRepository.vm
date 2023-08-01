@@ -1,15 +1,16 @@
-#set(${className} = ${fileName})
+#set($entityName = ${table.capitalizedCamelCaseNonModuleName})
+#set($className = $entityName + "Repository")
 #if($table.primaryKeyColumns.size() > 1)
 	#set($primaryKeyClassName = $className + "Pk")
 #else
 	#set($primaryKeyClassName = $table.uniquePrimaryKeyColumn.javaType.importedAwareName)
 #end
-package ${package};
+package ${packageName};
 
 import org.springframework.stereotype.Repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 @Repository
-public interface ${className} extends JpaRepository<$table.naming, $primaryKeyClassName> {
+public interface ${className} extends JpaRepository<$entityName, $primaryKeyClassName> {
 
 }

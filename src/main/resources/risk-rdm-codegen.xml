@@ -15,14 +15,14 @@
 
 		<template file="jpaEntity.vm"
 			targetProject="testproject\src\main\java"
-			targetPackage="aiib.test.entity" targetFileSuffix=""
-			targetFileExt=".java" />
+			targetPackage="aiib.test.entity.${uncapitalizedCamelCaseModuleName}" 
+			targetFile="${capitalizedCamelCaseNonModuleName}.java" />
 		<template file="jpaRepository.vm"
 			targetProject="testproject\src\main\java"
-			targetPackage="aiib.test.repository" targetFileSuffix="Repository"
-			targetFileExt=".java" />
+			targetPackage="aiib.test.repository.${uncapitalizedCamelCaseModuleName}" 
+			targetFile="${capitalizedCamelCaseNonModuleName}Respository.java" />
 	</templates>
-	<tables namingStrategy="chopFirstPhase">
+	<tables>
 		<table catalog="" schema="" tableName="TEST%">
 			<generatedKey column="ID" strategy="sequence" parameters="{&quot;seq_test&quot;}"/>
 		</table>

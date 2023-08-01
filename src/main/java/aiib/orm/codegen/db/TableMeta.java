@@ -31,17 +31,12 @@ public class TableMeta {
 	private String schema;	
 	private String type;	// TABLE || VIEW	
 	private String remarks;
-	private String naming;
 	
 	private Context context;
 	
 	public boolean isTable() 
 	{
 		return "TABLE".equals(type);
-	}
-	
-	public boolean isView() {
-		return "VIEW".equals(type);
 	}
 	
 	public String getCapitalizedCamelCaseName() {
@@ -52,8 +47,42 @@ public class TableMeta {
 		return CaseUtils.toCamelCase(name, false);
 	}
 	
-	public String getUncapitalizedNaming() {
-		return StringUtils.uncapitalize(naming);
+	public String getModuleName() {
+		var index = StringUtils.indexOfAny(name, CaseUtils.NAME_DELIMETERS);
+		
+		if (index == StringUtils.INDEX_NOT_FOUND) {
+			return StringUtils.EMPTY;
+			
+		} else {
+			return name.substring(0, index);
+		}
+	}
+	
+	public String getCapitalizedCamelCaseModuleName() {
+		return CaseUtils.toCamelCase(getModuleName(), true);
+	}
+	
+	public String getUncapitalizedCamelCaseModuleName() {
+		return CaseUtils.toCamelCase(getModuleName(), false);
+	}
+	
+	public String getNonModuleName() {
+		var index = StringUtils.indexOfAny(name, CaseUtils.NAME_DELIMETERS);
+		
+		if (index == StringUtils.INDEX_NOT_FOUND) {
+			return name;
+			
+		} else {
+			return name.substring(index + 1);
+		}
+	}
+	
+	public String getCapitalizedCamelCaseNonModuleName() {
+		return CaseUtils.toCamelCase(getNonModuleName(), true);
+	}
+	
+	public String getUncapitalizedCamelCaseNonModuleName() {
+		return CaseUtils.toCamelCase(getNonModuleName(), false);
 	}
 	
 	@Setter(AccessLevel.NONE)

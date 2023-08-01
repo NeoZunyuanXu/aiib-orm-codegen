@@ -10,6 +10,7 @@ import java.nio.file.Paths;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.RegExUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.CaseUtils;
@@ -83,32 +84,69 @@ public final class CodeGenerator {
 	
 	private void execute(TableMeta tableMeta, Template template) throws IOException {
 		var velocityContext = new VelocityContext(toolContext);		
-
+		var packageName = popluatePackage(template.getTargetPackage(), tableMeta);
+		
 		var path = Paths.get(
 				context.getConfiguration().getTemplates().getTargetRootPath(), 
 				template.getTargetProject(),
-				RegExUtils.replaceAll(template.getTargetPackage(), "\\.", "/"))
+				RegExUtils.replaceAll(packageName, "\\.", "/"))
 				.toAbsolutePath().toString();		
 		
 		var pathFile = new File(path);
 		if (!pathFile.exists()) pathFile.mkdirs();
 	
-		var fileName = StringUtils.join(template.getTargetFilePrefix(), 
-				tableMeta.getNaming(), template.getTargetFileSuffix()); 
-		
-		var fileFullName = StringUtils.join(fileName, template.getTargetFileExt());
+		var fileName = populateProperties(template.getTargetFile(), tableMeta); 
 				
 		velocityContext.put("table", tableMeta);
 		velocityContext.put("fileName", fileName);
-		velocityContext.put("package", template.getTargetPackage() == null ? "" : template.getTargetPackage());
+		velocityContext.put("packageName", packageName == null ? "" : packageName);
 		velocityContext.put("CaseUtils", CaseUtils.class);
 		velocityContext.put("StringUtils", StringUtils.class);
 		
-		var file = new File(path + "/" + fileFullName);
+		var file = new File(path + "/" + fileName);
 		
 		try (var fileWriter = new FileWriter(file, false)) {
 			engine.mergeTemplate(templatePath + template.getFile(), "UTF-8", velocityContext, fileWriter);			
 		}	
+	}
+	
+	private final String PROPERTY_START = "${";
+	private final String PROPERTY_END = "}";	
+	
+	private String populateProperties(String str, TableMeta tableMeta) {
+		if (str == null) return str;
+		
+		var start = str.indexOf(PROPERTY_START);		
+		if (start == StringUtils.INDEX_NOT_FOUND) return str;
+		
+		var end = str.indexOf(PROPERTY_END, start + 1);
+		if (end == StringUtils.INDEX_NOT_FOUND) return str;
+		
+		var propertyName = str.substring(start + PROPERTY_START.length(), end).trim();
+		String propertyValue;
+		try {
+			propertyValue = BeanUtils.getProperty(tableMeta, propertyName);
+		} catch (Exception e) {
+			propertyValue = StringUtils.EMPTY;
+		}
+					
+		var populatedValue = str.substring(0, start) + propertyValue + str.substring(end + PROPERTY_END.length());
+		
+		return populateProperties(populatedValue, tableMeta);
+	}
+	
+	private String popluatePackage(String str, TableMeta tableMeta) {
+		if (str == null) return str;
+		
+		str = populateProperties(str, tableMeta);
+		if (str.endsWith(".")) {
+			str = str.substring(0, str.length() - 1);
+		
+		} else {
+			str = RegExUtils.replaceAll(str, "\\.{2,}", ".");
+		}
+		
+		return str;
 	}
 
 	public static void main(String[] args) throws Exception {

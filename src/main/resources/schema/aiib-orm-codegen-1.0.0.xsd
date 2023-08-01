@@ -45,22 +45,12 @@
 		<xs:attribute name="file" type="xs:string" use="required"/>
 		<xs:attribute name="targetProject" type="xs:string" use="required"/>
 		<xs:attribute name="targetPackage" type="xs:string"/>
-		<xs:attribute name="targetFilePrefix" type="xs:string"/>
-		<xs:attribute name="targetFileSuffix" type="xs:string"/>
-		<xs:attribute name="targetFileExt" type="xs:string"/>
+		<xs:attribute name="targetFile" type="xs:string" use="required"/>
 	</xs:complexType>
 	<xs:complexType name="Tables">
 		<xs:sequence>
 			<xs:element name="table" type="Table" minOccurs="0" maxOccurs="unbounded"/>	
-		</xs:sequence>
-		<xs:attribute name="namingStrategy" default="default">
-			<xs:simpleType>
-				<xs:restriction base="xs:string">
-					<xs:enumeration value="default" />
-					<xs:enumeration value="chopFirstPhase" />
-				</xs:restriction>
-			</xs:simpleType>
-		</xs:attribute>	
+		</xs:sequence>		
 	</xs:complexType>
 	<xs:complexType name="Table">
 		<xs:sequence>

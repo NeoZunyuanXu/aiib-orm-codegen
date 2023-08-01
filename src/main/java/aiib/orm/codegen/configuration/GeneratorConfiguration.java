@@ -65,18 +65,11 @@ public final class GeneratorConfiguration {
 		
 		private String targetPackage;
 		
-		private String targetFilePrefix;
-		
-		private String targetFileSuffix;
-		
-		private String targetFileExt;
+		private String targetFile;
 	}
 	
 	@Data
 	public static class Tables {
-		@JacksonXmlProperty(isAttribute = true)
-		private NamingStrategy namingStrategy;
-		
 		@JacksonXmlProperty(isAttribute = false, localName = "table")
 		@JacksonXmlElementWrapper(useWrapping = false)
 		private List<Table> tables;
@@ -118,20 +111,7 @@ public final class GeneratorConfiguration {
 			this.name = name;
 		}	
 	}
-	
-	@Getter
-	@ToString
-	public static enum NamingStrategy {
-		DEFAULT("default"),
-		CHOP_FIRST_PHASE("chopFirstPhase");
-		
-		@JsonValue
-		private String name;
-		
-		private NamingStrategy(String name) {
-			this.name = name;
-		}	
-	}
+
 }
 
 

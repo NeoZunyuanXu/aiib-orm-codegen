@@ -1,8 +1,8 @@
-#set(${className} = ${fileName})
+#set(${className} = ${table.capitalizedCamelCaseNonModuleName})
 #if($table.primaryKeyColumns.size() > 1)
 	#set($primaryKeyClassName = $className + "Pk")
 #end
-package ${package};
+package ${packageName};
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -13,7 +13,7 @@ import javax.persistence.Id;
 #end
 
 @Entity
-@Table(name = "${table.name}")
+@Table(name = "$table.name")
 @lombok.Data
 #if($table.primaryKeyColumns.size() > 1)
 @javax.persistence.IdClass(${primaryKeyClassName}.class)

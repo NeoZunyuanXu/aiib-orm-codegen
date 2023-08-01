@@ -9,13 +9,11 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 
 import aiib.orm.codegen.configuration.GeneratorConfiguration;
-import aiib.orm.codegen.configuration.GeneratorConfiguration.NamingStrategy;
 import aiib.orm.codegen.configuration.GeneratorConfigurationParser;
 import aiib.orm.codegen.db.DbClient;
 import aiib.orm.codegen.db.TableMeta;
 import aiib.orm.codegen.type.JavaTypeResolver;
 import aiib.orm.codegen.type.JavaTypeResolverFactory;
-import aiib.orm.codegen.util.CaseUtils;
 import aiib.orm.codegen.util.CollectionUtils;
 import lombok.Getter;
 
@@ -49,8 +47,7 @@ public class Context {
 				
 				for (var tableMeta : tableMetas) {
 					tableMeta.setContext(this);						
-					tableMeta.setNaming(namingTable(tableMeta.getName(), configuration.getTables().getNamingStrategy()));
-					
+										
 					for (var columnMeta : tableMeta.getColumns()) {
 						var javaType = javaTypeResolver.resolveColumnType(columnMeta);
 						
@@ -77,27 +74,6 @@ public class Context {
 				}
 			}
 		} 
-	}
-	
-	private String namingTable(String name, NamingStrategy strategy) {
-		if (strategy == null) strategy = NamingStrategy.DEFAULT;
-		
-		return switch (strategy) {
-			case DEFAULT -> CaseUtils.toCamelCase(name, true);
-			case CHOP_FIRST_PHASE -> {
-				String chopedName;	
-				var pos = StringUtils.indexOfAny(name, CaseUtils.NAME_DELIMETERS);
-				
-				if (pos == StringUtils.INDEX_NOT_FOUND) {
-					chopedName = name;
-				
-				} else {
-					chopedName = name.substring(pos + 1);
-				}
-								
-				yield CaseUtils.toCamelCase(chopedName, true);
-			}
-		};
 	}
 	
 }
