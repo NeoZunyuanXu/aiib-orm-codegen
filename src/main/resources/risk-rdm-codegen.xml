@@ -25,6 +25,7 @@
 	<tables>
 		<table catalog="" schema="" tableName="TEST%">
 			<generatedKey column="ID" strategy="sequence" parameters="{&quot;seq_test&quot;}"/>
+			<generatedKey column="ID1" strategy="sequence" parameters="{&quot;seq_test1&quot;}"/>
 		</table>
 	</tables>
 </generatorConfiguration>
