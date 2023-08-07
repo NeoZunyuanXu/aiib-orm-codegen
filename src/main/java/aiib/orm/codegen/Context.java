@@ -64,7 +64,7 @@ public class Context {
 							
 							if (generatedKey.isPresent()) {
 								columnMeta.setGeneratedKey(true);
-								columnMeta.setGeneratedKeyStrategy(generatedKey.get().getStrategy());
+								columnMeta.setGeneratedKeyType(generatedKey.get().getType());
 								columnMeta.setGeneratedKeyParameters(generatedKey.get().getParameters());
 							}
 						}

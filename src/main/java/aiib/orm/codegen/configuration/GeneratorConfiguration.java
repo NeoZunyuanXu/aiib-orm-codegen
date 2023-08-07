@@ -93,7 +93,7 @@ public final class GeneratorConfiguration {
 	public static class GeneratedKey {
 		private String column;
 		
-		private String strategy;
+		private String type;
 		
 		private String parameters;
 	}

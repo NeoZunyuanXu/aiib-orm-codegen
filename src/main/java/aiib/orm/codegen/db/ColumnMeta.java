@@ -38,7 +38,7 @@ public class ColumnMeta {
 	
 	private boolean isGeneratedKey = false;
 	
-	private String generatedKeyStrategy;
+	private String generatedKeyType;
 	
 	private String generatedKeyParameters;
 

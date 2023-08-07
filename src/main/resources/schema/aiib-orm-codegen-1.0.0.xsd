@@ -62,7 +62,7 @@
 	</xs:complexType>
 	<xs:complexType name="GeneratedKey">
 		<xs:attribute name="column" type="xs:string" use="required" />
-		<xs:attribute name="strategy" type="xs:string" use="required" />
+		<xs:attribute name="type" type="xs:string" use="required" />
 		<xs:attribute name="parameters" type="xs:string" />
 	</xs:complexType>
 </xs:schema>

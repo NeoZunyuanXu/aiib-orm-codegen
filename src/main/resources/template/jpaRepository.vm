@@ -1,16 +1,18 @@
 #set($entityName = ${table.capitalizedCamelCaseNonModuleName})
+#set($entityPackageName = $StringUtils.replace(${packageName}, "repository", "entity"))
 #set($className = $entityName + "Repository")
 #if($table.primaryKeyColumns.size() > 1)
-	#set($primaryKeyClassName = $className + "Pk")
+	#set($primaryKeyClassName = $entityName + "." + $entityName + "Pk")
 #else
 	#set($primaryKeyClassName = $table.uniquePrimaryKeyColumn.javaType.importedAwareName)
 #end
 package ${packageName};
 
 import org.springframework.stereotype.Repository;
-import org.springframework.data.jpa.repository.JpaRepository;
+import aiib.rmp.jpa.JpaRepositoryExtension;
+import ${entityPackageName}.${entityName};
 
 @Repository
-public interface ${className} extends JpaRepository<$entityName, $primaryKeyClassName> {
+public interface ${className} extends JpaRepositoryExtension<$entityName, $primaryKeyClassName> {
 
 }

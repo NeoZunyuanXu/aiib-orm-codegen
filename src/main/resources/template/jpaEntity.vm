@@ -4,19 +4,19 @@
 #end
 package ${packageName};
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.Column;
-import javax.persistence.Id;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Id;
 #foreach(${explicitImportedJavaType} in ${table.explicitImportedJavaTypes})
-	import ${explicitImportedJavaType}
+	import ${explicitImportedJavaType};
 #end
 
 @Entity
 @Table(name = "$table.name")
-@lombok.Data
+@lombok.Getter @lombok.Setter @lombok.ToString
 #if($table.primaryKeyColumns.size() > 1)
-@javax.persistence.IdClass(${primaryKeyClassName}.class)
+@jakarta.persistence.IdClass(${className}.${primaryKeyClassName}.class)
 #end
 public class ${className} {	
 	#foreach(${column} in ${table.columns})
@@ -26,8 +26,8 @@ public class ${className} {
 		#end
 		#if(${column.generatedKey})
 			#set(${columnGeneratedKeyName} = ${table.name.toLowerCase()} + '_' + ${column.name.toLowerCase()} + '_gen_key')
-			@javax.persistence.GeneratedValue(generator = "${columnGeneratedKeyName}")
-			@org.hibernate.annotations.GenericGenerator(name="${columnGeneratedKeyName}", strategy="${column.generatedKeyStrategy}"#if($StringUtils.isNotEmpty($column.generatedKeyParameters)), parameters=${column.generatedKeyParameters}#end)
+			@jakarta.persistence.GeneratedValue(generator = "${columnGeneratedKeyName}")
+			@org.hibernate.annotations.GenericGenerator(name="${columnGeneratedKeyName}", type=${column.generatedKeyType}#if($StringUtils.isNotEmpty($column.generatedKeyParameters)), parameters=${column.generatedKeyParameters}#end)
 		#end
 		@Column(name="${column.name}", nullable = ${column.nullable}#if(${column.javaType.string}), length = ${column.length}#end#if(${column.javaType.decimal}), precision = ${column.length}, scale=${column.scale}#end)
 		private ${column.javaType.shortName} ${column.uncapitalizedCamelCaseName};
@@ -37,7 +37,7 @@ public class ${className} {
 		@lombok.Data
 		@lombok.NoArgsConstructor
 		@lombok.AllArgsConstructor
-		public static class $primaryKeyClassName implements java.io.IOException {
+		public static class $primaryKeyClassName implements java.io.Serializable {
 			@java.io.Serial
 			private static final long serialVersionUID = 1L;			
 			#foreach($primaryKeyColumn in $table.primaryKeyColumns)

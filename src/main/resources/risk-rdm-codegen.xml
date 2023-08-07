@@ -11,21 +11,20 @@
 	<javaTypeResolver>aiib.orm.codegen.type.JavaTypeResolverDefaultImpl</javaTypeResolver>
 	<templates
 		path="classpath:template/"
-		targetRootPath="C:\Temp">
+		targetRootPath="C:\Users\zunyuan.xu\source\eclipse\">
 
 		<template file="jpaEntity.vm"
-			targetProject="testproject\src\main\java"
-			targetPackage="aiib.test.entity.${uncapitalizedCamelCaseModuleName}" 
+			targetProject="aiib-rmp\src\main\java"
+			targetPackage="aiib.rmp.entity.${uncapitalizedCamelCaseModuleName}" 
 			targetFile="${capitalizedCamelCaseNonModuleName}.java" />
 		<template file="jpaRepository.vm"
-			targetProject="testproject\src\main\java"
-			targetPackage="aiib.test.repository.${uncapitalizedCamelCaseModuleName}" 
-			targetFile="${capitalizedCamelCaseNonModuleName}Respository.java" />
+			targetProject="aiib-rmp\src\main\java"
+			targetPackage="aiib.rmp.repository.${uncapitalizedCamelCaseModuleName}" 
+			targetFile="${capitalizedCamelCaseNonModuleName}Repository.java" />
 	</templates>
 	<tables>
 		<table catalog="" schema="" tableName="TEST%">
-			<generatedKey column="ID" strategy="sequence" parameters="{&quot;seq_test&quot;}"/>
-			<generatedKey column="ID1" strategy="sequence" parameters="{&quot;seq_test1&quot;}"/>
+			<generatedKey column="ID" type="org.hibernate.id.IdentityGenerator.class" parameters=""/>
 		</table>
 	</tables>
 </generatorConfiguration>
